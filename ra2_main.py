@@ -24,6 +24,7 @@ from algorithms.mru_cache import MRUCache
 from simulation.simulator import CacheSimulator
 from simulation.report_generator import ReportGenerator
 from core.config import settings
+from simulation.simulator import update_default_algorithm
 
 class CacheTextReader:
     """Classe principal da aplicação"""
@@ -44,12 +45,12 @@ class CacheTextReader:
         self.cache_manager = CacheManager(self.cache_algorithms)
 
         # Algoritmo padrão (pode ser alterado pela simulação)
-        self.current_algorithm = 'LRU'
+        self.current_algorithm = settings.DEFAULT_ALGORITHM
 
     def load_text(self, text_id):
         """Carrega um texto usando o sistema de cache"""
         start_time = time.perf_counter()
-
+        
         # Verificar se texto existe no cache
         cached_text = self.cache_manager.get(text_id, self.current_algorithm)
 
@@ -128,10 +129,14 @@ class CacheTextReader:
             best_algorithm = simulator.get_best_algorithm(results)
 
             print(f"\nAlgoritmo recomendado baseado na simulação: {best_algorithm}")
-            print(f"Algoritmo atual será alterado para: {best_algorithm}")
-
-            # Atualizar algoritmo padrão
-            self.current_algorithm = best_algorithm
+            
+            # Atualizar algoritmo em tempo real e salvar configuração
+            if self.current_algorithm != best_algorithm:
+                print(f"Algoritmo padrão será alterado de '{self.current_algorithm}' para '{best_algorithm}'.")
+                self.current_algorithm = best_algorithm
+                update_default_algorithm(best_algorithm)
+            else:
+                print(f"O algoritmo recomendado ('{best_algorithm}') já é o padrão.")
 
             input("\nPressione Enter para voltar ao menu principal...")
 

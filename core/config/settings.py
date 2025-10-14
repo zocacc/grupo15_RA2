@@ -10,6 +10,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 # Configurações de cache
 CACHE_SIZE = 10  # Máximo de 10 textos no cache, conforme especificado
+DEFAULT_ALGORITHM = 'FIFO'  # Algoritmo padrão para uso normal
 
 # Diretórios
 TEXT_DIR = PROJECT_ROOT / "texts"
