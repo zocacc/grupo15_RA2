@@ -274,3 +274,40 @@ class CacheSimulator:
         # Implementar exportação CSV
         # (Por brevidade, retornando o nome do arquivo)
         return filename
+
+
+import re
+from pathlib import Path
+
+def update_default_algorithm(new_algorithm: str):
+    """
+    Atualiza o algoritmo padrão no arquivo de configurações.
+
+    Args:
+        new_algorithm: O nome do novo algoritmo padrão (ex: 'LRU', 'FIFO').
+    """
+    settings_file = Path(__file__).parent.parent / "core" / "config" / "settings.py"
+    
+    try:
+        with open(settings_file, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        new_lines = []
+        updated = False
+        for line in lines:
+            # Procura pela linha que define DEFAULT_ALGORITHM
+            if re.match(r"^\s*DEFAULT_ALGORITHM\s*=\s*['\"]\w+['\"]", line):
+                new_lines.append(f"DEFAULT_ALGORITHM = '{new_algorithm}'  # Algoritmo padrão para uso normal\n")
+                updated = True
+            else:
+                new_lines.append(line)
+
+        if updated:
+            with open(settings_file, 'w', encoding='utf-8') as f:
+                f.writelines(new_lines)
+            print(f"\n-> Algoritmo padrão atualizado para: {new_algorithm}")
+        else:
+            print("\n-> AVISO: Não foi possível encontrar a configuração DEFAULT_ALGORITHM para atualizar.")
+
+    except IOError as e:
+        print(f"\nERRO: Não foi possível ler ou escrever no arquivo de configurações: {e}")
